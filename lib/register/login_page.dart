@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'register_page.dart';
 
+// perubahan state
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -11,18 +12,24 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController usernameController = TextEditingController();
+  // deklarasi
+  final TextEditingController usernameController =
+      TextEditingController(); //mengambil input dari text field
   final TextEditingController passwordController = TextEditingController();
   String errorMessage = '';
 
+// otentikasi
   Future<void> _login() async {
+    // mengambil data dari shared preferences atau data yang tersimpan secara lokal saat regis
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? registeredUsername = prefs.getString('username');
     String? registeredPassword = prefs.getString('password');
 
+// perbandingan
     if (usernameController.text == registeredUsername &&
         passwordController.text == registeredPassword) {
       Navigator.pushReplacement(
+        //navigator push untuk pindah halaman berikutnya dan menghapus halaman sebelumnya
         context,
         MaterialPageRoute(builder: (context) => const DashboardPage()),
       );
@@ -33,6 +40,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+// halaman UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
             ElevatedButton(onPressed: _login, child: const Text("Login")),
             TextButton(
               onPressed: () {
-                Navigator.push(
+                Navigator.push( //pindah halaman 
                   context,
                   MaterialPageRoute(builder: (context) => const RegisterPage()),
                 );

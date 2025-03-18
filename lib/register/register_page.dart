@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
 
+// ada data yang berubah dinamis seperti dropdown
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -10,12 +12,13 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  // deklarasi
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
-  DateTime? selectedDate;
+  DateTime? selectedDate; // (?) variabel ini bisa bernilai null
   String? gender;
   String? religion;
 
@@ -26,16 +29,25 @@ class _RegisterPageState extends State<RegisterPage> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != selectedDate) {
+
+    if (picked != null) {
       setState(() {
         selectedDate = picked;
       });
     }
   }
 
+  String getFormattedDate() {
+    if (selectedDate == null) return "Select Birthdate";
+    return DateFormat('dd-MM-yyyy')
+        .format(selectedDate!); // Format tanggal saja
+  }
+
   Future<void> _register() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('username', usernameController.text);
+    SharedPreferences prefs = await SharedPreferences
+        .getInstance(); //mengambil instance penyimpanan lokal
+    await prefs.setString('username',
+        usernameController.text); //menyimpan data yang diinput pengguna
     await prefs.setString('email', emailController.text);
     await prefs.setString('password', passwordController.text);
     await prefs.setString('phone', phoneController.text);
@@ -50,6 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+// UI regis
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +79,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: const InputDecoration(labelText: "Email")),
             TextField(
                 controller: passwordController,
-                obscureText: true,
+                obscureText: true, //menyembunyikan input pw
                 decoration: const InputDecoration(labelText: "Password")),
             TextField(
                 controller: phoneController,
@@ -75,16 +88,14 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: addressController,
                 decoration: const InputDecoration(labelText: "Address")),
             ListTile(
-              title: Text(selectedDate == null
-                  ? "Select Birthdate"
-                  : "Birthdate: ${selectedDate!.toLocal()}"),
+              title: Text(getFormattedDate()), // Tampilkan hanya tanggal
               trailing: const Icon(Icons.calendar_today),
               onTap: () => _selectDate(context),
             ),
             DropdownButtonFormField(
               value: gender,
               hint: const Text("Select Gender"),
-              items: ["Male", "Female"].map((String value) {
+              items: ["Perempuan", "Laki-laki"].map((String value) {
                 return DropdownMenuItem(value: value, child: Text(value));
               }).toList(),
               onChanged: (value) {
@@ -96,8 +107,14 @@ class _RegisterPageState extends State<RegisterPage> {
             DropdownButtonFormField(
               value: religion,
               hint: const Text("Select Religion"),
-              items: ["Islam", "Christianity", "Hinduism", "Buddhism", "Other"]
-                  .map((String value) {
+              items: [
+                "Islam",
+                "Kristen",
+                "Hindu",
+                "Buddha",
+                "Katolik",
+                "Konghucu"
+              ].map((String value) {
                 return DropdownMenuItem(value: value, child: Text(value));
               }).toList(),
               onChanged: (value) {
